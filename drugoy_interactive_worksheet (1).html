@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Отработка «другой» — Interactive RU→EN Worksheet</title>
+<style>
+  :root {
+    --bg: #F4F1E9;
+    --primary: #15857A;
+    --primary-d: #0F6B66;
+    --accent: #FF6A3B;
+    --accent-d: #E5542B;
+    --body: #2C2C2C;
+    --secondary: #606060;
+    --surface: #FAF7EF;
+    --header-bg: #15857A;
+    --header-text: #FFFFFF;
+    --inner-line: #D5D0C8;
+    --shadow: 0 2px 8px rgba(20, 80, 70, 0.08);
+    --shadow-hover: 0 4px 14px rgba(20, 80, 70, 0.15);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--body);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", "Noto Sans", Arial, "Microsoft YaHei", sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 1080px; margin: 0 auto; padding: 24px 20px 80px; }
+
+  /* ── Cover / Hero ───────────────────────────────────────────── */
+  .hero {
+    background: var(--surface);
+    border: 3px solid var(--primary);
+    border-radius: var(--radius);
+    padding: 40px 28px;
+    text-align: center;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0; height: 8px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+  }
+  .hero .label {
+    color: var(--accent); font-weight: 700; letter-spacing: 4px;
+    font-size: 13px; text-transform: uppercase; margin-bottom: 14px;
+  }
+  .hero h1 {
+    color: var(--primary); font-size: 36px; margin: 0 0 6px;
+    font-weight: 800; letter-spacing: -0.5px;
+  }
+  .hero h2 {
+    color: var(--body); font-size: 20px; font-weight: 600;
+    margin: 0 0 14px;
+  }
+  .hero .meta {
+    color: var(--secondary); font-size: 15px; font-style: italic;
+    margin-bottom: 18px;
+  }
+  .hero .forms {
+    color: var(--body); font-size: 14px;
+    background: #fff; padding: 10px 18px; border-radius: 999px;
+    display: inline-block; border: 1px solid var(--inner-line);
+  }
+  .hero .forms b { color: var(--accent); }
+
+  /* ── Global controls ────────────────────────────────────────── */
+  .global-controls {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    justify-content: center; margin: -10px 0 32px;
+  }
+  .btn {
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    padding: 9px 18px; border-radius: 999px; cursor: pointer;
+    border: 2px solid transparent; transition: all 180ms ease;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary {
+    background: var(--primary); color: #fff; border-color: var(--primary);
+  }
+  .btn-primary:hover { background: var(--primary-d); border-color: var(--primary-d); }
+  .btn-accent {
+    background: var(--accent); color: #fff; border-color: var(--accent);
+  }
+  .btn-accent:hover { background: var(--accent-d); border-color: var(--accent-d); }
+  .btn-ghost {
+    background: transparent; color: var(--primary); border-color: var(--primary);
+  }
+  .btn-ghost:hover { background: var(--primary); color: #fff; }
+  .btn-sm { font-size: 13px; padding: 6px 12px; }
+
+  /* ── Activity section ───────────────────────────────────────── */
+  .activity {
+    background: #fff;
+    border: 1px solid var(--inner-line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px 24px;
+    margin-bottom: 28px;
+    transition: box-shadow 200ms ease;
+  }
+  .activity:hover { box-shadow: var(--shadow-hover); }
+  .activity-head { margin-bottom: 14px; }
+  .activity-head h3 {
+    color: var(--primary); font-size: 22px; margin: 0 0 4px;
+    font-weight: 800;
+  }
+  .activity-head .h3-en {
+    color: var(--secondary); font-size: 15px; font-style: italic;
+    font-weight: 500; margin: 0 0 12px;
+  }
+  .activity-head .instr-ru {
+    color: var(--body); font-size: 14px; margin: 0 0 4px;
+  }
+  .activity-head .instr-en {
+    color: var(--secondary); font-size: 13px; font-style: italic;
+    margin: 0;
+  }
+  .activity-bar {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    justify-content: space-between; margin: 16px 0 10px;
+    padding: 10px 12px; background: var(--surface);
+    border-radius: 8px; border: 1px solid var(--inner-line);
+  }
+  .activity-bar .controls { display: flex; gap: 6px; flex-wrap: wrap; }
+  .activity-bar .progress {
+    font-size: 13px; color: var(--secondary); font-weight: 600;
+  }
+  .activity-bar .progress b { color: var(--primary); }
+
+  /* ── Sentence table ─────────────────────────────────────────── */
+  table.sentences { width: 100%; border-collapse: collapse; font-size: 15px; }
+  table.sentences thead th {
+    background: var(--header-bg); color: var(--header-text);
+    padding: 9px 10px; text-align: center; font-weight: 700;
+    font-size: 14px; border: 1px solid var(--primary);
+  }
+  table.sentences thead th:first-child { border-left: 1px solid var(--primary); border-radius: 6px 0 0 0; }
+  table.sentences thead th:last-child  { border-right: 1px solid var(--primary); border-radius: 0 6px 0 0; }
+  table.sentences tbody td {
+    padding: 10px 12px; border: 1px solid var(--inner-line);
+    vertical-align: middle;
+  }
+  table.sentences tbody tr:nth-child(even) td { background: var(--surface); }
+  table.sentences tbody tr:hover td { background: #fff5e8; }
+  td.num {
+    width: 38px; text-align: center; font-weight: 700;
+    color: var(--primary); font-size: 14px;
+  }
+  td.ru { width: 48%; color: var(--body); }
+  td.en-cell { width: 48%; }
+  .en-content {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .check-btn {
+    font-family: inherit; font-size: 13px; font-weight: 700;
+    padding: 5px 14px; border-radius: 6px; cursor: pointer;
+    background: var(--accent); color: #fff; border: 2px solid var(--accent);
+    transition: all 180ms ease; white-space: nowrap;
+    min-width: 78px;
+  }
+  .check-btn:hover { background: var(--accent-d); border-color: var(--accent-d); }
+  .check-btn.revealed {
+    background: #fff; color: var(--secondary); border-color: var(--inner-line);
+  }
+  .check-btn.revealed::before { content: "✓ "; color: var(--primary); }
+  .answer {
+    flex: 1; min-width: 200px;
+    color: var(--body); font-size: 15px;
+    max-height: 0; overflow: hidden; opacity: 0;
+    transition: max-height 300ms ease, opacity 220ms ease;
+  }
+  .answer.visible { max-height: 80px; opacity: 1; padding: 2px 0; }
+  .answer .target {
+    color: var(--accent); font-weight: 800;
+    background: rgba(255, 106, 59, 0.08);
+    padding: 0 4px; border-radius: 3px;
+  }
+
+  /* ── Footer hint ─────────────────────────────────────────────── */
+  .hint {
+    text-align: center; color: var(--secondary); font-size: 13px;
+    font-style: italic; margin-top: 28px;
+  }
+  .hint b { color: var(--accent); }
+
+  /* ── Responsive ─────────────────────────────────────────────── */
+  @media (max-width: 700px) {
+    .hero h1 { font-size: 26px; }
+    .hero h2 { font-size: 16px; }
+    .activity { padding: 16px 14px; }
+    .activity-head h3 { font-size: 18px; }
+    table.sentences { font-size: 14px; }
+    td.ru, td.en-cell { width: auto; display: block; }
+    td.num { display: none; }
+    .activity-bar { flex-direction: column; align-items: stretch; }
+  }
+
+  /* ── Print ───────────────────────────────────────────────────── */
+  @media print {
+    .global-controls, .activity-bar { display: none; }
+    .check-btn { display: none; }
+    .answer { max-height: 80px !important; opacity: 1 !important; }
+    body { background: #fff; }
+    .hero { border: 2px solid #000; }
+    .activity { box-shadow: none; border: 1px solid #999; page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ── HERO ───────────────────────────────────────────────────── -->
+  <header class="hero">
+    <div class="label">ESL Worksheet</div>
+    <h1>Отработка «другой»</h1>
+    <h2>Drilling “другой”: Russian → English</h2>
+    <div class="meta">A2 Elementary  •  9 Activities  •  90 Sentences</div>
+    <div class="forms">Forms drilled: <b>another</b> · <b>other (+noun)</b> · <b>the other</b> · <b>others</b> · <b>the others</b></div>
+  </header>
+
+  <!-- ── GLOBAL CONTROLS ────────────────────────────────────────── -->
+  <div class="global-controls">
+    <button class="btn btn-accent" id="reveal-all-top">👁 Показать все ответы / Reveal all</button>
+    <button class="btn btn-ghost" id="hide-all-top">🙈 Скрыть все / Hide all</button>
+    <button class="btn btn-primary" onclick="window.print()">🖨 Печать / Print</button>
+  </div>
+
+  <!-- ── INTRO ──────────────────────────────────────────────────── -->
+  <div class="activity" style="background: var(--surface);">
+    <div class="activity-head">
+      <h3>Как пользоваться / How to Use</h3>
+      <p class="instr-ru">Прочитайте русское предложение и попробуйте перевести его на английский. Нажмите кнопку <b style="color:var(--accent)">«Проверить / Check»</b> справа, чтобы увидеть правильный перевод. Целевая форма (another, other, the other, others, the others) выделена <b style="color:var(--accent)">жирным оранжевым</b>.</p>
+      <p class="instr-en">Read the Russian sentence and try to translate it into English. Click the <b style="color:var(--accent)">«Check»</b> button on the right to reveal the correct translation. The target form (another, other, the other, others, the others) is highlighted in <b style="color:var(--accent)">bold orange</b>.</p>
+    </div>
+  </div>
+
+  <!-- ── ACTIVITIES RENDERED HERE ──────────────────────────────── -->
+  <div id="activities-root"></div>
+
+  <p class="hint">
+    Совет: сначала попытайтесь перевести все предложения упражнения самостоятельно, и только потом нажимайте <b>«Проверить»</b>.  •  Tip: try translating all sentences in an activity on your own first, then click <b>«Check»</b>.
+  </p>
+</div>
+
+<script>
+/* ───────────────────────────────────────────────────────────────────
+   DATA: 9 activities (3 single-form + 6 mixed drills)
+   Each row: [Russian, English]
+   `target` = array of lowercase strings to bold in the English answer
+   ─────────────────────────────────────────────────────────────────── */
+const ACTIVITIES = [
+  {
+    n: 1,
+    titleRu: "Упражнение 1 — another",
+    titleEn: "Activity 1 — another",
+    instrRu: "«Another» употребляется с исчисляемыми существительными в единственном числе (ещё один / другой из возможных).",
+    instrEn: "«Another» is used with singular countable nouns (one more / a different one).",
+    target: ["another"],
+    rows: [
+      ["Дайте мне, пожалуйста, другую ручку.", "Give me another pen, please."],
+      ["Можно мне ещё одно яблоко?", "Can I have another apple?"],
+      ["Мне не нравится этот фильм. Давай посмотрим другой.", "I don't like this film. Let's watch another."],
+      ["Ещё один стакан сока, пожалуйста.", "Another glass of juice, please."],
+      ["Эта кофта мне не нравится. Покажите другую.", "I don't like this blouse. Show me another."],
+      ["У нас есть ещё один вопрос.", "We have another question."],
+      ["Он купил ещё одну машину.", "He bought another car."],
+      ["Где я могу найти другой отель?", "Where can I find another hotel?"],
+      ["Я хочу заказать ещё одну чашку чая.", "I want to order another cup of tea."],
+      ["Можно попробовать другой вкус?", "Can I try another flavour?"],
+    ],
+  },
+  {
+    n: 2,
+    titleRu: "Упражнение 2 — the other / other (+ существительное)",
+    titleEn: "Activity 2 — the other / other (+ noun)",
+    instrRu: "«The other» — конкретный второй предмет из двух (один... а другой...). «Other + существительное» — с множественным числом или неисчисляемыми (другие люди, другие планы).",
+    instrEn: "«The other» is the specific second item of two (one... and the other...). «Other + noun» is used with plurals or uncountables (other people, other plans).",
+    target: ["the other", "other"],
+    rows: [
+      ["У меня две книги: одна интересная, а другая скучная.", "I have two books: one is interesting, and the other is boring."],
+      ["Он живёт на другой стороне улицы.", "He lives on the other side of the street."],
+      ["Другие люди тоже придут.", "Other people will come too."],
+      ["Один мальчик играет, а другой читает.", "One boy is playing, and the other is reading."],
+      ["Где другая перчатка?", "Where is the other glove?"],
+      ["У меня есть другие планы на вечер.", "I have other plans for the evening."],
+      ["Откройте другую дверь.", "Open the other door."],
+      ["Другие студенты уже ушли.", "Other students have already left."],
+      ["Одна рука холодная, а другая тёплая.", "One hand is cold, and the other is warm."],
+      ["Я не знаю другие языки.", "I don't know other languages."],
+    ],
+  },
+  {
+    n: 3,
+    titleRu: "Упражнение 3 — others / the others",
+    titleEn: "Activity 3 — others / the others",
+    instrRu: "«Others» (без артикля) — неопределённое местоимение (некоторые... другие...). «The others» — конкретные оставшиеся из известной группы.",
+    instrEn: "«Others» (no article) is an indefinite pronoun (some... others...). «The others» refers to the remaining ones of a known group.",
+    target: ["others", "the others"],
+    rows: [
+      ["Некоторые любят чай, а другие — кофе.", "Some like tea, and others like coffee."],
+      ["Двое ушли домой, а другие остались.", "Two went home, and the others stayed."],
+      ["Где остальные?", "Where are the others?"],
+      ["Эти конфеты вкусные, а другие — нет.", "These sweets are tasty, and others are not."],
+      ["Один студент сдал экзамен, а другие — нет.", "One student passed the exam, and the others didn't."],
+      ["Некоторые работают в офисе, а другие — дома.", "Some work in the office, and others work at home."],
+      ["Я уже посмотрел одни фильмы, теперь хочу посмотреть другие.", "I've already seen some films, now I want to see others."],
+      ["Трое согласны, а где остальные?", "Three agree, and where are the others?"],
+      ["Эти книги мои, а другие — твои.", "These books are mine, and the others are yours."],
+      ["На столе пять яблок. Я взял одно, а где другие?", "There are five apples on the table. I took one, and where are the others?"],
+    ],
+  },
+  {
+    n: 4,
+    titleRu: "Упражнение 4 — Смешанное повторение 1",
+    titleEn: "Activity 4 — Mixed Review 1",
+    instrRu: "В этом упражнении встречаются все пять форм. Переводя, обращайте внимание, какую форму требует контекст.",
+    instrEn: "All five forms appear here. Notice which form each context requires.",
+    target: ["another", "other", "the other", "others", "the others"],
+    rows: [
+      ["Можно мне ещё одну чашку кофе?", "Can I have another cup of coffee?"],
+      ["Другие люди тоже хотят прийти.", "Other people also want to come."],
+      ["У меня два брата: один врач, а другой — учитель.", "I have two brothers: one is a doctor, and the other is a teacher."],
+      ["Некоторые книги интересные, а другие — скучные.", "Some books are interesting, and others are boring."],
+      ["Двое ушли, а где остальные?", "Two left, and where are the others?"],
+      ["Дайте мне другую ручку, эта не пишет.", "Give me another pen, this one doesn't write."],
+      ["Собака спит на другой стороне комнаты.", "The dog is sleeping on the other side of the room."],
+      ["Я хочу попробовать другие блюда.", "I want to try other dishes."],
+      ["Трое детей играют, а другие рисуют.", "Three children are playing, and others are drawing."],
+      ["У нас было пять билетов. Один я потерял, а где другие?", "We had five tickets. I lost one, and where are the others?"],
+    ],
+  },
+  {
+    n: 5,
+    titleRu: "Упражнение 5 — Смешанное 2: «Один... а другой / другие»",
+    titleEn: "Activity 5 — Mixed 2: «One... and the other / others»",
+    instrRu: "Конструкции с противопоставлением: «один... а другой...» (the other, из двух) и «один... а другие...» (others, неопределённое множество).",
+    instrEn: "Contrast patterns: «one... and the other...» (the other — out of two) and «one... and others...» (others — indefinite set).",
+    target: ["the other", "others", "another", "other", "the others"],
+    rows: [
+      ["У неё две кошки: одна чёрная, а другая белая.", "She has two cats: one is black, and the other is white."],
+      ["Один мой друг живёт в Москве, а другой — в Петербурге.", "One of my friends lives in Moscow, and the other lives in St. Petersburg."],
+      ["Две двери закрыты, а где другие?", "Two doors are closed, and where are the others?"],
+      ["Один ученик отвечает, другие слушают.", "One student is answering, and others are listening."],
+      ["У меня две сестры: одна старшая, а другая младшая.", "I have two sisters: one is older, and the other is younger."],
+      ["Один брат женат, а другие нет.", "One brother is married, and others are not."],
+      ["На тарелке два пирожных. Одно съел я, а где другое?", "There are two cakes on the plate. I ate one, and where is the other?"],
+      ["Один автомобиль красный, а другой синий.", "One car is red, and the other is blue."],
+      ["Двое пришли вовремя, а другие опоздали.", "Two arrived on time, and the others were late."],
+      ["Один ботинок здесь, а где другой?", "One shoe is here, and where is the other?"],
+    ],
+  },
+  {
+    n: 6,
+    titleRu: "Упражнение 6 — Смешанное 3: Количество и остаток",
+    titleEn: "Activity 6 — Mixed 3: Quantity & remainder",
+    instrRu: "Контексты с конкретной группой: «некоторые... другие...» (others) и «конкретные оставшиеся» (the others — the rest). Внимательно: «the others» — про известную группу.",
+    instrEn: "Contexts with a known group: «some... others...» (others — indefinite) and «the remaining ones» (the others — the rest). Note: «the others» refers to a known group.",
+    target: ["others", "the others", "another", "other", "the other"],
+    rows: [
+      ["У нас было десять минут. Пять прошло, а где остальные?", "We had ten minutes. Five have passed, and where are the others?"],
+      ["На полке шесть чашек. Я взял одну, а где другие?", "There are six cups on the shelf. I took one, and where are the others?"],
+      ["В классе двадцать студентов. Один отсутствует, а где остальные?", "There are twenty students in the class. One is absent, and where are the others?"],
+      ["Некоторые люди любят лето, а другие — зиму.", "Some people like summer, and others like winter."],
+      ["У него четыре книги. Одну он прочитал, а другие ещё нет.", "He has four books. He has read one, and the others not yet."],
+      ["На столе три апельсина. Один мой, а где другие?", "There are three oranges on the table. One is mine, and where are the others?"],
+      ["Пять писем пришли вчера, а другие — сегодня.", "Five letters arrived yesterday, and the others today."],
+      ["Четверо работают в саду, а другие — в доме.", "Four are working in the garden, and others in the house."],
+      ["В коробке двенадцать конфет. Я съел две, а где остальные?", "There are twelve sweets in the box. I ate two, and where are the others?"],
+      ["Некоторые спрашивают, другие отвечают.", "Some ask, and others answer."],
+    ],
+  },
+  {
+    n: 7,
+    titleRu: "Упражнение 7 — Смешанное 4: Просьбы и выбор",
+    titleEn: "Activity 7 — Mixed 4: Requests & choices",
+    instrRu: "Просьбы заменить предмет: «дайте другой» (another — ещё один, другой из возможных), «покажите другие» (others — другие варианты), «где другие?» (the others — оставшиеся).",
+    instrEn: "Requests to swap an item: «give me another» (another — one more / a different one), «show me others» (others — alternative options), «where are the others?» (the others — the remaining ones).",
+    target: ["another", "others", "the others", "other", "the other"],
+    rows: [
+      ["Эта ручка не пишет. Дайте мне другую.", "This pen doesn't write. Give me another."],
+      ["Я не хочу этот журнал. Покажите мне другой.", "I don't want this magazine. Show me another."],
+      ["Мне не нравится этот цвет. Можно посмотреть другой?", "I don't like this colour. Can I see another?"],
+      ["Эти туфли слишком маленькие. Дайте другие.", "These shoes are too small. Give me others."],
+      ["Я не понимаю этот пример. Приведите другой.", "I don't understand this example. Give me another."],
+      ["Этот отель слишком дорогой. Найдите мне другой.", "This hotel is too expensive. Find me another."],
+      ["Эта рубашка мне не подходит. Покажите другие.", "This shirt doesn't fit me. Show me others."],
+      ["Я не хочу эту книгу. Можно взять другую?", "I don't want this book. Can I take another?"],
+      ["Эта чашка грязная. Дайте мне другую.", "This cup is dirty. Give me another."],
+      ["Эти билеты проданы. Где другие?", "These tickets are sold. Where are the others?"],
+    ],
+  },
+  {
+    n: 8,
+    titleRu: "Упражнение 8 — Смешанное 5: Место и направление",
+    titleEn: "Activity 8 — Mixed 5: Place & direction",
+    instrRu: "Локация и перемещение: «на другой стороне» (the other side — конкретная), «в другую комнату» (another — ещё одну), «в других странах» (other — определение).",
+    instrEn: "Location and movement: «on the other side» (the other side — definite), «to another room» (another — one more), «in other countries» (other — modifier).",
+    target: ["the other", "another", "other", "others", "the others"],
+    rows: [
+      ["Ключ упал на другую сторону стола.", "The key fell on the other side of the table."],
+      ["Давайте перейдём в другую комнату.", "Let's move to another room."],
+      ["Банк находится на другой стороне улицы.", "The bank is on the other side of the street."],
+      ["Люди в других странах тоже это празднуют.", "People in other countries also celebrate this."],
+      ["Дети побежали в другую сторону.", "The children ran in the other direction."],
+      ["Мы переехали в другой город.", "We moved to another city."],
+      ["Магазин находится на другом углу.", "The shop is on the other corner."],
+      ["Другие туристы уже ушли из отеля.", "Other tourists have already left the hotel."],
+      ["Мой дом находится на другой стороне реки.", "My house is on the other side of the river."],
+      ["Они перешли на другую тему разговора.", "They moved on to another topic."],
+    ],
+  },
+  {
+    n: 9,
+    titleRu: "Упражнение 9 — Смешанное 6: Общая практика",
+    titleEn: "Activity 9 — Mixed 6: General practice",
+    instrRu: "Финальное смешанное упражнение со свежими предложениями. Все пять форм встречаются вперемешку.",
+    instrEn: "Final mixed drill with fresh sentences. All five forms appear throughout.",
+    target: ["another", "other", "the other", "others", "the others"],
+    rows: [
+      ["Можно мне ещё одну ложку?", "Can I have another spoon?"],
+      ["У вас есть другие вопросы?", "Do you have other questions?"],
+      ["Двое работают, а где остальные?", "Two are working, and where are the others?"],
+      ["Покажите мне другую модель.", "Show me another model."],
+      ["Один сосед громкий, а другой тихий.", "One neighbour is loud, and the other is quiet."],
+      ["Другие студенты придут позже.", "Other students will arrive later."],
+      ["Я уже прочитал одну главу, теперь читаю другие.", "I've already read one chapter, now I'm reading the others."],
+      ["Дайте мне ещё одну салфетку.", "Give me another napkin."],
+      ["Трое согласны, а другие против.", "Three agree, and others are against."],
+      ["На столе четыре ложки. Две мои, а где другие?", "There are four spoons on the table. Two are mine, and where are the others?"],
+    ],
+  },
+];
+
+/* ───────────────────────────────────────────────────────────────────
+   RENDER
+   ─────────────────────────────────────────────────────────────────── */
+function boldTarget(en, targets) {
+  // Tokenize keeping whitespace, bold whole-word matches (case-insensitive)
+  const tokens = en.split(/(\s+)/);
+  return tokens.map(tok => {
+    const stripped = tok.replace(/[.,!?;:""()`]/g, "").toLowerCase();
+    if (targets.some(t => stripped === t.toLowerCase())) {
+      return `<span class="target">${escapeHtml(tok)}</span>`;
+    }
+    return escapeHtml(tok);
+  }).join("");
+}
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  })[c]);
+}
+
+const root = document.getElementById("activities-root");
+ACTIVITIES.forEach(act => {
+  const section = document.createElement("section");
+  section.className = "activity";
+  section.dataset.act = act.n;
+
+  // Head
+  const head = document.createElement("div");
+  head.className = "activity-head";
+  head.innerHTML = `
+    <h3>${act.titleRu}</h3>
+    <p class="h3-en">${act.titleEn}</p>
+    <p class="instr-ru">${act.instrRu}</p>
+    <p class="instr-en">${act.instrEn}</p>
+  `;
+  section.appendChild(head);
+
+  // Control bar
+  const bar = document.createElement("div");
+  bar.className = "activity-bar";
+  bar.innerHTML = `
+    <div class="controls">
+      <button class="btn btn-accent btn-sm act-reveal">👁 Показать все / Reveal all</button>
+      <button class="btn btn-ghost btn-sm act-hide">🙈 Скрыть / Hide all</button>
+    </div>
+    <div class="progress">Проверено / Checked: <b>0</b> / ${act.rows.length}</div>
+  `;
+  section.appendChild(bar);
+
+  // Table
+  const tableWrap = document.createElement("div");
+  tableWrap.style.overflowX = "auto";
+  const table = document.createElement("table");
+  table.className = "sentences";
+  table.innerHTML = `
+    <thead><tr>
+      <th>#</th>
+      <th>Русский / Russian</th>
+      <th>English (ответ / answer)</th>
+    </tr></thead>
+    <tbody></tbody>
+  `;
+  const tbody = table.querySelector("tbody");
+  act.rows.forEach((row, i) => {
+    const [ru, en] = row;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="num">${i + 1}</td>
+      <td class="ru">${escapeHtml(ru)}</td>
+      <td class="en-cell">
+        <div class="en-content">
+          <button class="check-btn" type="button">Проверить / Check</button>
+          <div class="answer" data-html="${escapeHtml(boldTarget(en, act.target))}"></div>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+  tableWrap.appendChild(table);
+  section.appendChild(tableWrap);
+  root.appendChild(section);
+});
+
+/* ───────────────────────────────────────────────────────────────────
+   INTERACTION
+   ─────────────────────────────────────────────────────────────────── */
+function updateProgress(section) {
+  const total = section.querySelectorAll("tbody tr").length;
+  const revealed = section.querySelectorAll(".check-btn.revealed").length;
+  const prog = section.querySelector(".progress b");
+  if (prog) prog.textContent = revealed;
+}
+
+function revealAnswer(btn) {
+  const answer = btn.parentElement.querySelector(".answer");
+  if (!answer) return;
+  if (!answer.innerHTML) {
+    // lazy-inject HTML
+    answer.innerHTML = answer.dataset.html;
+  }
+  answer.classList.add("visible");
+  btn.classList.add("revealed");
+  btn.textContent = "Скрыть / Hide";
+}
+
+function hideAnswer(btn) {
+  const answer = btn.parentElement.querySelector(".answer");
+  if (!answer) return;
+  answer.classList.remove("visible");
+  btn.classList.remove("revealed");
+  btn.textContent = "Проверить / Check";
+}
+
+function toggleAnswer(btn) {
+  if (btn.classList.contains("revealed")) hideAnswer(btn);
+  else revealAnswer(btn);
+  updateProgress(btn.closest(".activity"));
+}
+
+// Per-row click (event delegation — handles all check buttons)
+document.addEventListener("click", e => {
+  const btn = e.target.closest(".check-btn");
+  if (btn) toggleAnswer(btn);
+});
+
+// Per-activity reveal/hide
+document.querySelectorAll(".activity").forEach(section => {
+  const revealBtn = section.querySelector(".act-reveal");
+  const hideBtn = section.querySelector(".act-hide");
+  if (revealBtn) revealBtn.addEventListener("click", () => {
+    section.querySelectorAll(".check-btn").forEach(revealAnswer);
+    updateProgress(section);
+  });
+  if (hideBtn) hideBtn.addEventListener("click", () => {
+    section.querySelectorAll(".check-btn").forEach(hideAnswer);
+    updateProgress(section);
+  });
+});
+
+// Global controls
+document.getElementById("reveal-all-top").addEventListener("click", () => {
+  document.querySelectorAll(".check-btn").forEach(revealAnswer);
+  document.querySelectorAll(".activity").forEach(updateProgress);
+});
+document.getElementById("hide-all-top").addEventListener("click", () => {
+  document.querySelectorAll(".check-btn").forEach(hideAnswer);
+  document.querySelectorAll(".activity").forEach(updateProgress);
+});
+
+// Keyboard: pressing Enter on a focused check-btn toggles (native button behaviour already does),
+// and pressing "R" reveals all, "H" hides all
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+  if (e.key.toLowerCase() === "r" && !e.ctrlKey && !e.metaKey) {
+    document.getElementById("reveal-all-top").click();
+  } else if (e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.metaKey) {
+    document.getElementById("hide-all-top").click();
+  }
+});
+</script>
+</body>
+</html>
